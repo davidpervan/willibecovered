@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Will I Be Covered?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --paper: #f5f0e8;
+    --cream: #ede8dc;
+    --accent: #c8432a;
+    --accent-light: #e8d5d0;
+    --muted: #7a7165;
+    --border: #d4cec2;
+    --success: #2a6b3a;
+    --warning: #b86a00;
+    --danger: #c8432a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    padding: 48px 0 0;
+    text-align: center;
+  }
+
+  .logo-mark {
+    display: inline-block;
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .logo-mark::after {
+    content: '?';
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(42px, 8vw, 72px);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .tagline {
+    font-size: 17px;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 480px;
+    margin: 0 auto 12px;
+    line-height: 1.5;
+  }
+
+  .meta-line {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 0 48px;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    margin-bottom: 40px;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .progress-bar {
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* Questions */
+  .question-block {
+    display: none;
+    animation: fadeUp 0.35s ease forwards;
+  }
+
+  .question-block.active {
+    display: block;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .question-number {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .question-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 4vw, 30px);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .question-hint {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  /* Options */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    background: white;
+    transition: all 0.18s ease;
+    font-size: 15px;
+    font-weight: 400;
+    text-align: left;
+    width: 100%;
+    color: var(--ink);
+  }
+
+  .option:hover {
+    border-color: var(--ink);
+    background: var(--cream);
+  }
+
+  .option.selected {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: white;
+  }
+
+  .option-key {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    opacity: 0.5;
+    min-width: 20px;
+  }
+
+  /* Text / date inputs */
+  .text-input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    background: white;
+    color: var(--ink);
+    margin-bottom: 32px;
+    transition: border-color 0.18s;
+    outline: none;
+  }
+
+  .text-input:focus {
+    border-color: var(--ink);
+  }
+
+  /* Navigation */
+  .nav-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 64px;
+  }
+
+  .btn-next {
+    padding: 16px 40px;
+    background: var(--ink);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: all 0.18s;
+  }
+
+  .btn-next:hover {
+    background: #2a2a2a;
+    transform: translateY(-1px);
+  }
+
+  .btn-next:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-back {
+    padding: 16px 24px;
+    background: transparent;
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+
+  .btn-back:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  .skip-link {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: auto;
+  }
+
+  /* Results */
+  #results {
+    display: none;
+    padding-bottom: 80px;
+  }
+
+  .result-header {
+    margin-bottom: 48px;
+  }
+
+  .result-label {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .result-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 6vw, 52px);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  /* Score display */
+  .score-display {
+    margin: 40px 0;
+    padding: 40px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    background: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .score-display::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+  }
+
+  .score-display.high::before { background: var(--success); }
+  .score-display.medium::before { background: var(--warning); }
+  .score-display.low::before { background: var(--danger); }
+
+  .score-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 80px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .score-display.high .score-number { color: var(--success); }
+  .score-display.medium .score-number { color: var(--warning); }
+  .score-display.low .score-number { color: var(--danger); }
+
+  .score-label {
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .score-desc {
+    font-size: 15px;
+    color: var(--ink);
+    line-height: 1.6;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  /* Factors */
+  .factors {
+    margin: 32px 0;
+  }
+
+  .factors-title {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .factor {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .factor:last-child { border-bottom: none; }
+
+  .factor-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+  }
+
+  .factor-icon.pos { background: var(--success); }
+  .factor-icon.neg { background: var(--danger); }
+  .factor-icon.neu { background: var(--muted); }
+
+  /* Email capture */
+  .email-capture {
+    margin-top: 40px;
+    padding: 32px;
+    background: var(--cream);
+    border-radius: 4px;
+    border: 1.5px solid var(--border);
+  }
+
+  .email-capture h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .email-capture p {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .email-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .email-row input {
+    flex: 1;
+    padding: 14px 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    background: white;
+    outline: none;
+    transition: border-color 0.18s;
+  }
+
+  .email-row input:focus { border-color: var(--ink); }
+
+  .email-row button {
+    padding: 14px 24px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.18s;
+  }
+
+  .email-row button:hover { background: #a8361f; }
+
+  .email-success {
+    display: none;
+    font-size: 15px;
+    color: var(--success);
+    font-weight: 500;
+    padding: 14px 0;
+  }
+
+  /* Footer note */
+  .footer-note {
+    margin-top: 48px;
+    padding: 24px 0;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* Intro screen */
+  #intro {
+    padding: 48px 0 64px;
+    text-align: center;
+  }
+
+  .intro-stats {
+    display: flex;
+    gap: 2px;
+    margin: 40px 0;
+  }
+
+  .stat-block {
+    flex: 1;
+    padding: 24px 16px;
+    background: white;
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .stat-block:first-child { border-radius: 4px 0 0 4px; }
+  .stat-block:last-child { border-radius: 0 4px 4px 0; }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .btn-start {
+    display: inline-block;
+    padding: 20px 56px;
+    background: var(--ink);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  .btn-start:hover {
+    background: #2a2a2a;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+
+  .disclaimer {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 16px;
+  }
+
+  @media (max-width: 500px) {
+    .intro-stats { flex-direction: column; gap: 2px; }
+    .stat-block:first-child { border-radius: 4px 4px 0 0; }
+    .stat-block:last-child { border-radius: 0 0 4px 4px; }
+    .email-row { flex-direction: column; }
+    .score-number { font-size: 60px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="logo-mark"></div>
+    <h1<!-- header --></h1>
+    <p class="tagline">Find out whether your insurance will cover your fertility treatment — and if you've been denied, how likely you are to win on appeal.</p>
+    <p class="meta-line">2 minutes &nbsp;·&nbsp; No account &nbsp;·&nbsp; Free</p>
+    <div class="divider"></div>
+  </header>
+
+  <!-- INTRO -->
+  <div id="intro">
+    <div class="intro-stats">
+      <div class="stat-block">
+        <div class="stat-num">&lt;1%</div>
+        <div class="stat-desc">of denied patients ever file an external appeal</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num">47%</div>
+        <div class="stat-desc">of medical-grounds appeals get overturned</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num">180</div>
+        <div class="stat-desc">days to file — most people don't know this</div>
+      </div>
+    </div>
+    <button class="btn-start" onclick="startForm()">Check my coverage →</button>
+    <p class="disclaimer">This tool gives an estimated appeal strength — not legal advice.</p>
+  </div>
+
+  <!-- FORM -->
+  <div id="form-wrap" style="display:none;">
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progress-text">Question 1 of 10</span>
+        <span id="progress-pct">10%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:10%"></div></div>
+    </div>
+
+    <!-- Q1: Treatment -->
+    <div class="question-block active" id="q1">
+      <div class="question-number">01 — Treatment</div>
+      <div class="question-text">What treatment are you trying to get covered?</div>
+      <div class="options" id="q1-options">
+        <button class="option" onclick="selectOption('q1',0,0,'IVF')"><span class="option-key">A</span>IVF</button>
+        <button class="option" onclick="selectOption('q1',1,0,'FET')"><span class="option-key">B</span>Frozen Embryo Transfer (FET)</button>
+        <button class="option" onclick="selectOption('q1',2,0,'IUI')"><span class="option-key">C</span>IUI</button>
+        <button class="option" onclick="selectOption('q1',3,0,'Egg freezing - elective')"><span class="option-key">D</span>Egg freezing — elective</button>
+        <button class="option" onclick="selectOption('q1',4,10,'Egg freezing - medical')"><span class="option-key">E</span>Egg freezing — medical / fertility preservation</button>
+        <button class="option" onclick="selectOption('q1',5,0,'Embryo freezing')"><span class="option-key">F</span>Embryo freezing</button>
+        <button class="option" onclick="selectOption('q1',6,0,'PGT-A/PGT-M')"><span class="option-key">G</span>Genetic testing (PGT-A / PGT-M)</button>
+        <button class="option" onclick="selectOption('q1',7,0,'Donor egg')"><span class="option-key">H</span>Donor egg</button>
+        <button class="option" onclick="selectOption('q1',8,0,'Donor sperm')"><span class="option-key">I</span>Donor sperm</button>
+        <button class="option" onclick="selectOption('q1',9,0,'Gestational carrier / surrogacy')"><span class="option-key">J</span>Gestational carrier / surrogacy</button>
+        <button class="option" onclick="selectOption('q1',10,0,'Reciprocal IVF')"><span class="option-key">K</span>Reciprocal IVF</button>
+        <button class="option" onclick="selectOption('q1',11,0,'Vasectomy or tubal reversal')"><span class="option-key">L</span>Vasectomy or tubal reversal</button>
+        <button class="option" onclick="selectOption('q1',12,0,'Other')"><span class="option-key">M</span>Something else</button>
+      </div>
+      <div class="nav-row">
+        <button class="btn-next" id="q1-next" disabled onclick="goTo(2)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q2: Zip -->
+    <div class="question-block" id="q2">
+      <div class="question-number">02 — Location</div>
+      <div class="question-text">What's your zip code?</div>
+      <div class="question-hint">Used to determine which state mandate applies — if any.</div>
+      <input type="text" class="text-input" id="q2-input" placeholder="e.g. 10001" maxlength="5" oninput="checkTextInput('q2')">
+      <div class="nav-row">
+        <button class="btn-back" onclick="goTo(1)">← Back</button>
+        <button class="btn-next" id="q2-next" disabled onclick="processZip()">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q3: Carrier -->
+    <div class="question-block" id="q3">
+      <div class="question-number">03 — Carrier</div>
+      <div class="question-text">Who's your insurance through?</div>
+      <div class="options">
+        <button class="option" onclick="selectOption('q3',0,0,'Aetna')"><span class="option-key">A</span>Aetna</button>
+        <button class="option" onclick="selectOption('q3',1,0,'BCBS')"><span class="option-key">B</span>Blue Cross Blue Shield</button>
+        <button class="option" onclick="selectOption('q3',2,0,'Cigna')"><span class="option-key">C</span>Cigna</button>
+        <button class="option" onclick="selectOption('q3',3,0,'UHC/UMR')"><span class="option-key">D</span>UnitedHealthcare / UMR</button>
+        <button class="option" onclick="selectOption('q3',4,0,'Kaiser')"><span class="option-key">E</span>Kaiser Permanente</button>
+        <button class="option" onclick="selectOption('q3',5,0,'Anthem')"><span class="option-key">F</span>Anthem</button>
+        <button class="option" onclick="selectOption('q3',6,0,'Humana')"><span class="option-key">G</span>Humana</button>
+        <button class="option" onclick="selectOption('q3',7,-10,'Medicaid')"><span class="option-key">H</span>Medicaid</button>
+        <button class="option" onclick="selectOption('q3',8,0,'Tricare')"><span class="option-key">I</span>Tricare / military</button>
+        <button class="option" onclick="selectOption('q3',9,0,'Other')"><span class="option-key">J</span>Other</button>
+        <button class="option" onclick="selectOption('q3',10,-40,'None')"><span class="option-key">K</span>I don't have insurance</button>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goTo(2)">← Back</button>
+        <button class="btn-next" id="q3-next" disabled onclick="goTo(4)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q4: Plan source -->
+    <div class="question-block" id="q4">
+      <div class="question-number">04 — Plan Type</div>
+      <div class="question-text">How do you get your insurance?</div>
+      <div class="options">
+        <button class="option" onclick="selectOption('q4',0,0,'Employer')"><span class="option-key">A</span>Through my employer</button>
+        <button class="option" onclick="selectOption('q4',1,20,'Marketplace')"><span class="option-key">B</span>I bought it on healthcare.gov or directly from the insurer</button>
+        <button class="option" onclick="selectOption('q4',2,0,'Spouse/parent employer')"><span class="option-key">C</span>Through a spouse or parent's employer</button>
+        <button class="option" onclick="selectOption('q4',3,-10,'Medicare/Medicaid')"><span class="option-key">D</span>Medicaid / Medicare</button>
+        <button class="option" onclick="selectOption('q4',4,0,'Not sure')"><span class="option-key">E</span>Not sure</button>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goTo(3)">← Back</button>
+        <button class="btn-next" id="q4-next" disabled onclick="goTo(5)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q5: Self vs fully-insured -->
+    <div class="question-block" id="q5">
+      <div class="question-number">05 — Funding Type</div>
+      <div class="question-text">Is your employer's plan self-funded or fully-insured?</div>
+      <div class="question-hint">Look at your insurance card. If it says "Administered by [Insurer]" rather than "Insured by," it's probably self-funded. Most large employers (1,000+ employees) are self-funded. Not sure? Ask HR.</div>
+      <div class="options">
+        <button class="option" onclick="selectOption('q5',0,-30,'Self-funded')"><span class="option-key">A</span>Self-funded (my employer pays claims directly)</button>
+        <button class="option" onclick="selectOption('q5',1,30,'Fully-insured')"><span class="option-key">B</span>Fully-insured (the insurer takes the risk)</button>
+        <button class="option" onclick="selectOption('q5',2,0,'No idea')"><span class="option-key">C</span>No idea</button>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goTo(4)">← Back</button>
+        <button class="btn-next" id="q5-next" disabled onclick="goTo(6)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q6: Status -->
+    <div class="question-block" id="q6">
+      <div class="question-number">06 — Status</div>
+      <div class="question-text">Where are you in the process?</div>
+      <div class="options">
+        <button class="option" onclick="selectOption('q6',0,5,'Pre-submission')"><span class="option-key">A</span>I haven't requested coverage yet</button>
+        <button class="option" onclick="selectOption('q6',1,5,'Waiting')"><span class="option-key">B</span>I've requested it — waiting for a decision</button>
+        <button class="option" onclick="selectOption('q6',2,10,'Denied')"><span class="option-key">C</span>I was denied</button>
+        <button class="option" onclick="selectOption('q6',3,15,'Appealed once')"><span class="option-key">D</span>I appealed once and was denied again</button>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goTo(5)">← Back</button>
+        <button class="btn-next" id="q6-next" disabled onclick="goTo(7)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q7: Denial reason -->
+    <div class="question-block" id="q7">
+      <div class="question-number">07 — Denial Reason</div>
+      <div class="question-text">What reason did they give for the denial?</div>
+      <div class="question-hint">If you haven't been denied yet, skip this.</div>
+      <div class="options">
+        <button class="option" onclick="selectOption('q7',0,20,'Medical necessity')"><span class="option-key">A</span>Not medically necessary</button>
+        <button class="option" onclick="selectOption('q7',1,10,'Experimental')"><span class="option-key">B</span>Experimental / investigational</button>
+        <button class="option" onclick="selectOption('q7',2,-25,'Excluded')"><span class="option-key">C</span>Not a covered benefit / excluded from my plan</button>
+        <button class="option" onclick="selectOption('q7',3,15,'Criteria')"><span class="option-key">D</span>I don't meet their criteria</button>
+        <button class="option" onclick="selectOption('q7',4,-10,'OON')"><span class="option-key">E</span>Out of network</button>
+        <button class="option" onclick="selectOption('q7',5,5,'Paperwork')"><span class="option-key">F</span>Missing paperwork / prior authorization</button>
+        <button class="option" onclick="selectOption('q7',6,5,'Unknown')"><span class="option-key">G</span>Other / not sure</button>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goTo(6)">← Back</button>
+        <button class="btn-next" id="q7-next" disabled onclick="goTo(8)">Next →</button>
+        <span class="skip-link" onclick="skipTo(8)">Skip</span>
+      </div>
+    </div>
+
+    <!-- Q8: Age -->
+    <div class="question-block" id="q8">
+      <div class="question-number">08 — Age</div>
+      <div class="question-text">How old are you?</div>
+      <div class="question-hint">Insurance criteria for "infertility" varies by age — affects what counts as medically necessary.</div>
+      <input type="number" class="text-input" id="q8-input" placeholder="e.g. 34" min="18" max="55" oninput="checkTextInput('q8')">
+      <div class="nav-row">
+        <button class="btn-back" onclick="goTo(7)">← Back</button>
+        <button class="btn-next" id="q8-next" disabled onclick="processAge()">Next →</button>
+        <span class="skip-link" onclick="skipTo(9)">Skip</span>
+      </div>
+    </div>
+
+    <!-- Q9: Time trying -->
+    <div class="question-block" id="q9">
+      <div class="question-number">09 — History</div>
+      <div class="question-text">How long have you been trying to conceive?</div>
+      <div class="options">
+        <button class="option" onclick="selectOption('q9',0,-5,'<6 months')"><span class="option-key">A</span>Less than 6 months</button>
+        <button class="option" onclick="selectOption('q9',1,5,'6-12 months')"><span class="option-key">B</span>6–12 months</button>
+        <button class="option" onclick="selectOption('q9',2,10,'12+ months')"><span class="option-key">C</span>12+ months</button>
+        <button class="option" onclick="selectOption('q9',3,15,'Preservation')"><span class="option-key">D</span>Not applicable — fertility preservation (cancer / medical reason)</button>
+        <button class="option" onclick="selectOption('q9',4,10,'LGBTQ')"><span class="option-key">E</span>Not applicable — same-sex couple or single by choice</button>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goTo(8)">← Back</button>
+        <button class="btn-next" id="q9-next" disabled onclick="goTo(10)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q10: Prior treatments -->
+    <div class="question-block" id="q10">
+      <div class="question-number">10 — Prior Treatments</div>
+      <div class="question-text">Any prior fertility treatments?</div>
+      <div class="question-hint">Many plans require 3–6 IUI attempts before approving IVF.</div>
+      <div class="options">
+        <button class="option" onclick="selectOption('q10',0,0,'None')"><span class="option-key">A</span>None</button>
+        <button class="option" onclick="selectOption('q10',1,5,'1-2 IUI')"><span class="option-key">B</span>1–2 IUI cycles</button>
+        <button class="option" onclick="selectOption('q10',2,10,'3+ IUI')"><span class="option-key">C</span>3 or more IUI cycles</button>
+        <button class="option" onclick="selectOption('q10',3,10,'Prior IVF')"><span class="option-key">D</span>1 or more prior IVF cycles</button>
+        <button class="option" onclick="selectOption('q10',4,5,'Other')"><span class="option-key">E</span>Other</button>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goTo(9)">← Back</button>
+        <button class="btn-next" id="q10-next" disabled onclick="showResults()">See my results →</button>
+      </div>
+    </div>
+
+  </div><!-- end form-wrap -->
+
+  <!-- RESULTS -->
+  <div id="results">
+    <div class="result-header">
+      <div class="result-label">Your appeal strength</div>
+      <div class="result-title" id="result-title">—</div>
+    </div>
+
+    <div class="score-display" id="score-display">
+      <div class="score-number" id="score-number">—</div>
+      <div class="score-label">estimated appeal strength</div>
+      <div class="score-desc" id="score-desc">—</div>
+    </div>
+
+    <div class="factors">
+      <div class="factors-title">Key factors in your assessment</div>
+      <div id="factors-list"></div>
+    </div>
+
+    <div class="email-capture">
+      <h3>Get your full next-steps report</h3>
+      <p>Drop your email and we'll send a personalised breakdown — including exact deadlines, which appeal stage to file, and what to include in your letter.</p>
+      <div class="email-row">
+        <input type="email" id="email-input" placeholder="your@email.com">
+        <button onclick="submitEmail()">Send me the plan</button>
+      </div>
+      <div class="email-success" id="email-success">✓ Got it — check your inbox within 24 hours.</div>
+    </div>
+
+    <div class="footer-note">
+      This tool provides an estimated appeal strength based on the information you shared. It is not legal or medical advice. Actual outcomes depend on your specific plan documents and denial letter. &nbsp;·&nbsp; Built by <a href="https://linkedin.com/in/davidpervan" style="color:var(--ink)">Dr. David Pervan</a>.
+    </div>
+  </div>
+
+</div><!-- end container -->
+
+<script>
+  // State
+  const answers = {};
+  let score = 0;
+  let mandateState = false;
+  const totalQ = 10;
+
+  const mandateStates = {
+    // NY
+    '10001':true,'10002':true,'10003':true,'10004':true,'10005':true,'10006':true,'10007':true,
+    '10009':true,'10010':true,'10011':true,'10012':true,'10013':true,'10014':true,'10016':true,
+    '10017':true,'10018':true,'10019':true,'10020':true,'10021':true,'10022':true,'10023':true,
+    '10024':true,'10025':true,'10026':true,'10027':true,'10028':true,'10029':true,'10030':true,
+    // CA zips
+    '90001':true,'90002':true,'90003':true,'90004':true,'90005':true,'90006':true,'90007':true,
+    '90008':true,'90010':true,'90011':true,'90012':true,'90013':true,'90014':true,'90015':true,
+    '94102':true,'94103':true,'94104':true,'94105':true,'94107':true,'94108':true,'94109':true,
+    // IL
+    '60601':true,'60602':true,'60603':true,'60604':true,'60605':true,'60606':true,'60607':true,
+    '60608':true,'60609':true,'60610':true,'60611':true,'60612':true,'60613':true,'60614':true,
+    // MA
+    '02101':true,'02102':true,'02103':true,'02104':true,'02105':true,'02106':true,'02107':true,
+    '02108':true,'02109':true,'02110':true,'02111':true,'02112':true,'02113':true,'02114':true,
+    '02115':true,'02116':true,'02118':true,'02119':true,'02120':true,'02121':true,'02122':true,
+    // NJ
+    '07001':true,'07002':true,'07003':true,'07004':true,'07005':true,'07006':true,'07007':true,
+    '07008':true,'07009':true,'07010':true,'07011':true,'07012':true,'07013':true,'07014':true,
+    // CT
+    '06001':true,'06002':true,'06010':true,'06013':true,'06016':true,'06018':true,'06019':true,
+  };
+
+  // Zip → state lookup (simplified by prefix)
+  function getStateFromZip(zip) {
+    const z = parseInt(zip);
+    if (z >= 10001 && z <= 14975) return 'NY';
+    if (z >= 90001 && z <= 96162) return 'CA';
+    if (z >= 60001 && z <= 62999) return 'IL';
+    if (z >= 1001 && z <= 2791) return 'MA';
+    if (z >= 7001 && z <= 8989) return 'NJ';
+    if (z >= 6001 && z <= 6928) return 'CT';
+    if (z >= 20001 && z <= 20599) return 'MD';
+    if (z >= 2801 && z <= 2940) return 'RI';
+    if (z >= 3001 && z <= 3897) return 'NH';
+    if (z >= 4001 && z <= 4992) return 'ME';
+    if (z >= 73001 && z <= 74966) return 'OK';
+    if (z >= 75001 && z <= 79999) return 'TX';
+    if (z >= 32004 && z <= 34997) return 'FL';
+    if (z >= 30001 && z <= 31999) return 'GA';
+    if (z >= 27006 && z <= 28909) return 'NC';
+    if (z >= 85001 && z <= 86556) return 'AZ';
+    return 'OTHER';
+  }
+
+  const mandateStatesList = ['NY','CA','IL','MA','NJ','CT','MD','RI','NH','ME','CO','DE','HI','LA','MT','UT','WV','AR'];
+
+  function startForm() {
+    document.getElementById('intro').style.display = 'none';
+    document.getElementById('form-wrap').style.display = 'block';
+    updateProgress(1);
+  }
+
+  function selectOption(qId, idx, pts, label) {
+    // Deselect all
+    const opts = document.querySelectorAll(`#${qId} .option`);
+    opts.forEach(o => o.classList.remove('selected'));
+    // Select clicked
+    opts[idx].classList.add('selected');
+    // Store
+    answers[qId] = { idx, pts, label };
+    // Enable next
+    document.getElementById(`${qId}-next`).disabled = false;
+  }
+
+  function checkTextInput(qId) {
+    const val = document.getElementById(`${qId}-input`).value.trim();
+    document.getElementById(`${qId}-next`).disabled = val.length < 1;
+  }
+
+  function processZip() {
+    const zip = document.getElementById('q2-input').value.trim();
+    answers['q2'] = { label: zip };
+    const state = getStateFromZip(zip);
+    answers['q2'].state = state;
+    if (mandateStatesList.includes(state)) {
+      mandateState = true;
+      answers['q2'].pts = 20;
+    } else {
+      mandateState = false;
+      answers['q2'].pts = 0;
+    }
+    goTo(3);
+  }
+
+  function processAge() {
+    const age = parseInt(document.getElementById('q8-input').value);
+    answers['q8'] = { label: age };
+    if (age >= 35) {
+      answers['q8'].pts = 10; // 35+ means 6-month criterion, easier to meet
+    } else {
+      answers['q8'].pts = 5;
+    }
+    goTo(9);
+  }
+
+  function skipTo(n) {
+    answers[`q${n-1}`] = { pts: 0, label: 'Skipped' };
+    goTo(n);
+  }
+
+  function goTo(n) {
+    // Hide all
+    document.querySelectorAll('.question-block').forEach(b => b.classList.remove('active'));
+    document.getElementById(`q${n}`).classList.add('active');
+    updateProgress(n);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress(n) {
+    const pct = Math.round((n / totalQ) * 100);
+    document.getElementById('progress-text').textContent = `Question ${n} of ${totalQ}`;
+    document.getElementById('progress-pct').textContent = `${pct}%`;
+    document.getElementById('progress-fill').style.width = `${pct}%`;
+  }
+
+  function calcScore() {
+    let s = 0;
+    for (const key in answers) {
+      if (answers[key].pts !== undefined) s += answers[key].pts;
+    }
+    return s;
+  }
+
+  function buildFactors() {
+    const factors = [];
+
+    // Mandate state
+    if (answers['q2']) {
+      const st = answers['q2'].state;
+      if (mandateStatesList.includes(st)) {
+        factors.push({ icon: 'pos', text: `${st} has a state IVF/fertility mandate — strengthens your position on fully-insured plans.` });
+      } else {
+        factors.push({ icon: 'neg', text: `${st || 'Your state'} has no fertility insurance mandate — this limits your leverage unless your plan is fully-insured.` });
+      }
+    }
+
+    // Plan type
+    if (answers['q5']) {
+      if (answers['q5'].label === 'Fully-insured') {
+        factors.push({ icon: 'pos', text: 'Fully-insured plan: state mandates and ACA protections apply in full.' });
+      } else if (answers['q5'].label === 'Self-funded') {
+        factors.push({ icon: 'neg', text: 'Self-funded (ERISA) plan: state mandates do not apply. Appeals must rely on federal grounds or plan-specific language.' });
+      }
+    }
+
+    // Denial reason
+    if (answers['q7']) {
+      if (answers['q7'].label === 'Medical necessity') {
+        factors.push({ icon: 'pos', text: '"Not medically necessary" denials are the most commonly overturned — ~47% reversed on external review.' });
+      } else if (answers['q7'].label === 'Excluded') {
+        factors.push({ icon: 'neg', text: 'Benefit exclusions are the hardest to overturn. External review cannot force coverage of explicitly excluded benefits.' });
+      } else if (answers['q7'].label === 'Experimental') {
+        factors.push({ icon: 'pos', text: '"Experimental" denials are often winnable — medical consensus on IVF/fertility preservation is strong.' });
+      } else if (answers['q7'].label === 'Criteria') {
+        factors.push({ icon: 'pos', text: '"Doesn\'t meet criteria" denials are often procedural — the right documentation frequently overturns them.' });
+      }
+    }
+
+    // Treatment
+    if (answers['q1']) {
+      if (answers['q1'].label === 'Egg freezing - medical') {
+        factors.push({ icon: 'pos', text: 'Medical fertility preservation (cancer/illness) is strongly supported by ASRM and ASCO guidelines — powerful basis for appeal.' });
+      } else if (answers['q1'].label === 'Egg freezing - elective') {
+        factors.push({ icon: 'neg', text: 'Elective egg freezing is rarely covered or successfully appealed — most plans classify it as non-medically necessary.' });
+      }
+    }
+
+    // LGBTQ / single
+    if (answers['q9'] && answers['q9'].label === 'LGBTQ') {
+      factors.push({ icon: 'pos', text: 'LGBTQ+ and single-parent cases have strong Section 1557 ACA protections against discriminatory "infertility" definitions.' });
+    }
+
+    // Preservation
+    if (answers['q9'] && answers['q9'].label === 'Preservation') {
+      factors.push({ icon: 'pos', text: 'Cancer/medical fertility preservation is covered under mandate in 21+ states and DC — and strongly appealable elsewhere.' });
+    }
+
+    // Prior appeals
+    if (answers['q6'] && answers['q6'].label === 'Appealed once') {
+      factors.push({ icon: 'pos', text: 'You\'ve completed internal appeals — you now have the right to file federal external review, where 47% of denials are overturned.' });
+    }
+
+    // Marketplace
+    if (answers['q4'] && answers['q4'].label === 'Marketplace') {
+      factors.push({ icon: 'pos', text: 'Marketplace (ACA) plans are fully-insured and subject to all state mandates — strong position.' });
+    }
+
+    return factors;
+  }
+
+  function showResults() {
+    document.getElementById('form-wrap').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+
+    const raw = calcScore();
+
+    // Normalize to 0–100
+    // Theoretical range: roughly -85 to +100
+    const minPossible = -85;
+    const maxPossible = 100;
+    let pct = Math.round(((raw - minPossible) / (maxPossible - minPossible)) * 100);
+    pct = Math.max(5, Math.min(95, pct)); // clamp
+
+    // Hard stops
+    if (answers['q3'] && answers['q3'].label === 'None') {
+      pct = 0;
+    }
+    if (answers['q7'] && answers['q7'].label === 'Excluded' && (!mandateState)) {
+      pct = Math.min(pct, 15);
+    }
+
+    const display = document.getElementById('score-display');
+    const numEl = document.getElementById('score-number');
+    const titleEl = document.getElementById('result-title');
+    const descEl = document.getElementById('score-desc');
+
+    numEl.textContent = pct + '%';
+
+    if (pct >= 55) {
+      display.className = 'score-display high';
+      titleEl.textContent = 'Your case looks strong.';
+      descEl.textContent = 'Based on what you shared, you have a meaningful chance of getting this covered or overturned on appeal. The external review process is binding on the insurer — and almost nobody files it.';
+    } else if (pct >= 30) {
+      display.className = 'score-display medium';
+      titleEl.textContent = 'You have a real shot.';
+      descEl.textContent = 'Your case isn\'t a slam dunk, but it\'s far from hopeless. People in your situation overturn denials more than they expect — with the right documentation and process.';
+    } else {
+      display.className = 'score-display low';
+      titleEl.textContent = 'This one is going to be hard.';
+      descEl.textContent = 'Based on what you shared, there are significant barriers. But some paths still exist — and "hard" is not the same as "impossible." We\'ll show you what\'s still worth trying.';
+    }
+
+    // Factors
+    const factors = buildFactors();
+    const factorList = document.getElementById('factors-list');
+    factorList.innerHTML = '';
+    factors.forEach(f => {
+      factorList.innerHTML += `
+        <div class="factor">
+          <div class="factor-icon ${f.icon}">${f.icon === 'pos' ? '↑' : f.icon === 'neg' ? '↓' : '·'}</div>
+          <div>${f.text}</div>
+        </div>`;
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function submitEmail() {
+    const email = document.getElementById('email-input').value.trim();
+    if (!email || !email.includes('@')) {
+      document.getElementById('email-input').style.borderColor = 'var(--accent)';
+      return;
+    }
+    // In production: POST to your backend / Formspree / Zapier
+    // For now: open mailto as fallback
+    const summary = buildEmailSummary();
+    const mailto = `mailto:davidpervan@gmail.com?subject=Am I Covered - New Submission&body=${encodeURIComponent(summary + '\n\nRespondent email: ' + email)}`;
+    window.location.href = mailto;
+
+    document.getElementById('email-input').style.display = 'none';
+    document.querySelector('.email-row button').style.display = 'none';
+    document.getElementById('email-success').style.display = 'block';
+  }
+
+  function buildEmailSummary() {
+    let lines = ['Will I Be Covered — Submission\n'];
+    lines.push('Treatment: ' + (answers['q1']?.label || '—'));
+    lines.push('Zip: ' + (answers['q2']?.label || '—') + ' (' + (answers['q2']?.state || '—') + ')');
+    lines.push('Mandate state: ' + (mandateState ? 'Yes' : 'No'));
+    lines.push('Carrier: ' + (answers['q3']?.label || '—'));
+    lines.push('Plan source: ' + (answers['q4']?.label || '—'));
+    lines.push('Self/fully-insured: ' + (answers['q5']?.label || '—'));
+    lines.push('Status: ' + (answers['q6']?.label || '—'));
+    lines.push('Denial reason: ' + (answers['q7']?.label || '—'));
+    lines.push('Age: ' + (answers['q8']?.label || '—'));
+    lines.push('Time trying: ' + (answers['q9']?.label || '—'));
+    lines.push('Prior treatments: ' + (answers['q10']?.label || '—'));
+    lines.push('Score: ' + calcScore() + ' (raw)');
+    return lines.join('\n');
+  }
+</script>
+</body>
+</html>
